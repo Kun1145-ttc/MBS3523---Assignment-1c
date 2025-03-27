@@ -1,0 +1,42 @@
+#include <Servo.h>
+
+Servo servoH;
+Servo servoV;
+
+const char separator = ',';
+
+void setup() {
+  Serial.begin(9600);
+  servoH.attach(10);
+  servoV.attach(9);
+}
+
+void loop() {
+  if (Serial.available()) {
+    String command = Serial.readStringUntil('\r');
+    command.trim();
+
+    if (command.length() > 0) {
+      int separatorIndex = command.indexOf(separator);
+      if (separatorIndex > 0) {
+        String angleH_str = command.substring(0, separatorIndex);
+        String angleV_str = command.substring(separatorIndex + 1);
+
+        int angleH = angleH_str.toInt();
+        int angleV = angleV_str.toInt();
+
+        if (angleH >= 0 && angleH <= 180) {
+          servoH.write(angleH);
+        }
+        if (angleV >= 0 && angleV <= 180) {
+          servoV.write(angleV);
+        }
+
+        Serial.print("Xangle: ");
+        Serial.print(angleH);
+        Serial.print("Yangle: ");
+        Serial.println(angleV);
+      }
+    }
+  }
+}
